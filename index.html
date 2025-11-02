@@ -25,7 +25,7 @@
         .then(data => {
           const file = Object.values(data.files)[0];
           if (file && file.content) {
-            document.getElementById('output').textContent = atob(file.content);
+            document.getElementById('output').textContent = file.content
           }
         })
         .catch(err => {
