@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   const gist = {
     description: "Paste Angular - " + new Date().toLocaleString(),
-    public: false,
+    public: true,
     files: { "code.ts": { content: code } }
   };
 
