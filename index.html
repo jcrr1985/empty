@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>EMPTY</title>
+  <title>🔥 PASTE NINJA PRO</title>
   <style>
     body { font-family: monospace; background: #111; color: #0f0; padding: 20px; }
     textarea { width: 100%; height: 70vh; background: #222; color: #0f0; border: 1px solid #0f0; }
-    button { background: #0f0; color: #000; padding: 10px; margin: 10px 0; }
+    button { background: #0f0; color: #000; padding: 10px; margin: 10px 0; font-weight: bold; }
     #output { white-space: pre-wrap; background: #222; padding: 10px; border: 1px solid #0f0; }
   </style>
 </head>
 <body>
-  <h1>EMPTY</h1>
-  <textarea id="code" placeholder="pomeshchat'"></textarea>
-  <button onclick="save()">sokhranit' i sozdat'</button>
+  <h1>🔥 PASTE NINJA PRO</h1>
+  <textarea id="code" placeholder="Pega tu código Angular aquí..."></textarea>
+  <button id="saveButton">🚀 GUARDAR & GENERAR LINK</button>
   <div id="output"></div>
 
   <script type="module">
+    // Lectura de gist si ?id=
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
     if (id) {
@@ -23,17 +24,29 @@
         .then(r => r.json())
         .then(data => {
           const file = Object.values(data.files)[0];
-          document.getElementById('output').textContent = atob(file.content);
+          if (file && file.content) {
+            document.getElementById('output').textContent = atob(file.content);
+          } else {
+            document.getElementById('output').textContent = 'Gist vacío o error.';
+          }
+        })
+        .catch(err => {
+          document.getElementById('output').textContent = `Error cargando: ${err.message}`;
         });
     }
 
-    async function save() {
+    // Botón con addEventListener (funciona en module)
+    const saveButton = document.getElementById('saveButton');
+    saveButton.addEventListener('click', async () => {
       const code = document.getElementById('code').value;
-      if (!code.trim()) return alert('Pega código primero!');
+      if (!code.trim()) {
+        alert('¡Pega código primero!');
+        return;
+      }
 
       const token = import.meta.env.VITE_GITHUB_TOKEN;
       if (!token) {
-        document.getElementById('output').textContent = 'Error: Token no configurado.';
+        document.getElementById('output').textContent = 'Error: Token no configurado en Vercel.';
         return;
       }
 
@@ -57,17 +70,17 @@
         if (data.id) {
           const link = `${window.location.origin}?id=${data.id}`;
           document.getElementById('output').innerHTML = `
-            <p>LINK SECRETO:</p>
+            <h2>¡LISTO! LINK SECRETO:</h2>
             <a href="${link}" style="color:#0f0; font-size:1.2em;">${link}</a>
-            <pre style="margin-top:20px;">${code}</pre>
+            <pre style="margin-top:20px; background:#000; padding:10px; border:1px solid #0f0;">${code}</pre>
           `;
         } else {
-          document.getElementById('output').textContent = `Error: ${JSON.stringify(data)}`;
+          document.getElementById('output').textContent = `Error API: ${JSON.stringify(data)}`;
         }
       } catch (err) {
-        document.getElementById('output').textContent = `Error: ${err.message}`;
+        document.getElementById('output').textContent = `Error red: ${err.message}`;
       }
-    }
+    });
   </script>
 </body>
 </html>
