@@ -27,24 +27,50 @@
         });
     }
 
-    function save() {
+
+    async function save() {
       const code = document.getElementById('code').value;
+      if (!code.trim()) return alert('Pega código primero!');
+
+      const token = import.meta.env.VITE_GITHUB_TOKEN;
+      if (!token) {
+        document.getElementById('output').textContent = 'Error: Token no configurado.';
+        return;
+      }
+
       const gist = {
-        description: "paste temporal",
+        description: "Paste Angular - " + new Date().toLocaleString(),
         public: false,
         files: { "code.ts": { content: code } }
       };
-      fetch('https://api.github.com/gists', {
-        method: 'POST',
-        headers: { 'Authorization': 'token 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' },
-        body: JSON.stringify(gist)
-      })
-      .then(r => r.json())
-      .then(data => {
-        const link = `${window.location.origin}?id=${data.id}`;
-        document.getElementById('output').innerHTML = `LINK: <a href="${link}">${link}</a><br><br>CÓDIGO:<pre>${code}</pre>`;
-      });
+
+      try {
+        const response = await fetch('https://api.github.com/gists', {
+          method: 'POST',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(gist)
+        });
+
+        const data = await response.json();
+        if (data.id) {
+          const link = `${window.location.origin}?id=${data.id}`;
+          document.getElementById('output').innerHTML = `
+            <p>LINK SECRETO:</p>
+            <a href="${link}" style="color:#0f0; font-size:1.2em;">${link}</a>
+            <pre style="margin-top:20px;">${code}</pre>
+          `;
+        } else {
+          document.getElementById('output').textContent = `Error: ${JSON.stringify(data)}`;
+        }
+      } catch (err) {
+        document.getElementById('output').textContent = `Error: ${err.message}`;
+      }
     }
+
+    
   </script>
 </body>
 </html>
