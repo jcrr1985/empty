@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'No code provided' });
   }
 
-  const token = process.env.VITE_GITHUB_TOKEN;
+  const token = process.env.GITHUB_TOKEN;
   if (!token) {
     return res.status(500).json({ error: 'Token not configured' });
   }
